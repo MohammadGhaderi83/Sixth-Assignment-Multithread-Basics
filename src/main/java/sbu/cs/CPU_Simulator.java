@@ -23,16 +23,30 @@ public class CPU_Simulator
         long processingTime;
         String ID;
         public Task(String ID, long processingTime) {
-        // TODO
+        this.processingTime = processingTime;
+        this.ID = ID;
         }
 
-    /*
-        Simulate running a task by utilizing the sleep method for the duration of
-        the task's processingTime. The processing time is given in milliseconds.
-    */
+        public String getID() {
+            return ID;
+        }
+
+        public long getProcessingTime() {
+            return processingTime;
+        }
+
+
+        /*
+       Simulate running a task by utilizing the sleep method for the duration of
+       the task's processingTime. The processing time is given in milliseconds.
+         */
         @Override
         public void run() {
-        // TODO
+            try {
+                Thread.sleep(this.processingTime);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -41,14 +55,26 @@ public class CPU_Simulator
         Here the CPU selects the next shortest task to run (also known as the
         shortest task first scheduling algorithm) and creates a thread for it to run.
     */
-    public ArrayList<String> startSimulation(ArrayList<Task> tasks) {
+    public static ArrayList<String> startSimulation(ArrayList<Task> tasks){
         ArrayList<String> executedTasks = new ArrayList<>();
 
-        // TODO
-
+        for (int i = 0 ; i < tasks.size(); i++){
+            Thread thread = new Thread(tasks.get(i));
+            thread.start();
+            executedTasks.add(tasks.get(i).getID());
+        }
         return executedTasks;
     }
+    public static void sort(ArrayList<Task> tasks){
 
-    public static void main(String[] args) {
     }
+    public static void main(String[] args) {
+        Task task_1 = new Task("123", 1000);
+        Task task_2 = new Task("234", 2000);
+        ArrayList <Task> tasks = new ArrayList<>();
+        tasks.add(task_1);
+        tasks.add(task_2);
+        System.out.println(startSimulation(tasks));
+    }
+
 }
