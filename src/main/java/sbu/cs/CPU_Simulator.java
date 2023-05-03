@@ -1,8 +1,6 @@
 package sbu.cs;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /*
     For this exercise, you must simulate a CPU with a single core.
@@ -20,9 +18,9 @@ import java.util.List;
 public class CPU_Simulator
 {
     public static class Task implements Runnable {
-        long processingTime;
+        int processingTime;
         String ID;
-        public Task(String ID, long processingTime) {
+        public Task(String ID, int processingTime) {
         this.processingTime = processingTime;
         this.ID = ID;
         }
@@ -31,7 +29,7 @@ public class CPU_Simulator
             return ID;
         }
 
-        public long getProcessingTime() {
+        public int getProcessingTime() {
             return processingTime;
         }
 
@@ -57,7 +55,6 @@ public class CPU_Simulator
     */
     public static ArrayList<String> startSimulation(ArrayList<Task> tasks){
         ArrayList<String> executedTasks = new ArrayList<>();
-
         for (int i = 0 ; i < tasks.size(); i++){
             Thread thread = new Thread(tasks.get(i));
             thread.start();
@@ -65,16 +62,23 @@ public class CPU_Simulator
         }
         return executedTasks;
     }
-    public static void sort(ArrayList<Task> tasks){
-
-    }
+    public static Comparator<Task> taskTime = new Comparator<Task>() {
+        @Override
+        public int compare(Task o1, Task o2) {
+            int time_1 = o1.getProcessingTime();
+            int time_2 = o2.getProcessingTime();
+            return time_1 - time_2;
+        }
+    };
     public static void main(String[] args) {
-        Task task_1 = new Task("123", 1000);
-        Task task_2 = new Task("234", 2000);
+        Task task_1 = new Task("123", 10);
+        Task task_2 = new Task("234", 20);
+        Task task_3 = new Task("789", 5);
         ArrayList <Task> tasks = new ArrayList<>();
         tasks.add(task_1);
         tasks.add(task_2);
+        tasks.add(task_3);
+        Collections.sort(tasks, taskTime);
         System.out.println(startSimulation(tasks));
     }
-
 }
