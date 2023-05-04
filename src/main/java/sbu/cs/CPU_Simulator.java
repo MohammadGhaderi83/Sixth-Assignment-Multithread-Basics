@@ -55,9 +55,15 @@ public class CPU_Simulator
     */
     public static ArrayList<String> startSimulation(ArrayList<Task> tasks){
         ArrayList<String> executedTasks = new ArrayList<>();
+        Collections.sort(tasks, taskTime);
         for (int i = 0 ; i < tasks.size(); i++){
             Thread thread = new Thread(tasks.get(i));
             thread.start();
+            try {
+                thread.join(tasks.get(i).getProcessingTime());
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             executedTasks.add(tasks.get(i).getID());
         }
         return executedTasks;
@@ -71,14 +77,13 @@ public class CPU_Simulator
         }
     };
     public static void main(String[] args) {
-        Task task_1 = new Task("123", 10);
-        Task task_2 = new Task("234", 20);
-        Task task_3 = new Task("789", 5);
+        Task task_1 = new Task("123", 1000);
+        Task task_2 = new Task("234", 2000);
+        Task task_3 = new Task("789", 500);
         ArrayList <Task> tasks = new ArrayList<>();
         tasks.add(task_1);
         tasks.add(task_2);
         tasks.add(task_3);
-        Collections.sort(tasks, taskTime);
         System.out.println(startSimulation(tasks));
     }
 }

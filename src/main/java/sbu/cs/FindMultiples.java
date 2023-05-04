@@ -25,9 +25,6 @@ import java.util.*;
 
 public class FindMultiples
 {
-
-    // TODO create the required multithreading class/classes using your preferred method.
-
     public static class Task implements Runnable{
         int[] divisors;
         Set<Integer> results;
