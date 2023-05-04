@@ -22,6 +22,8 @@ package sbu.cs;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class FindMultiples
 {
@@ -31,24 +33,31 @@ public class FindMultiples
         int n;
         int start;
         int end;
+        Lock lock;
 
-        public Task(int[] divisors, Set<Integer> results, int n, int start, int end) {
+        public Task(int[] divisors, Set<Integer> results, int n, int start, int end, Lock lock) {
             this.divisors = divisors;
             this.results = results;
             this.n = n;
             this.start = start;
             this.end = end;
+            this.lock = lock;
         }
 
         @Override
         public void run() {
-            for (int i = start; i <= end; i++){
-                for (int divisor : divisors){
-                    if (i % divisor == 0){
-                        results.add(i);
-                        break;
+            lock.lock();
+            try {
+                for (int i = this.start; i <= this.end; i++) {
+                    for (int divisor : this.divisors) {
+                        if (i % divisor == 0) {
+                            this.results.add(i);
+                            break;
+                        }
                     }
                 }
+            } finally{
+                lock.unlock();
             }
         }
     }
@@ -62,6 +71,7 @@ public class FindMultiples
         Set<Integer> results = new HashSet<>();
         List<Task> taskList = new ArrayList<>();
         List<Thread> threadList = new ArrayList<>();
+        Lock lock = new ReentrantLock();
         int range = (int) Math.floor(n / 6);
         //Map<Integer, Integer> start_end = new HashMap<>();
         int start_1 = 1; int end_1 = range; //start_end.put(start_1, end_1);
@@ -70,12 +80,12 @@ public class FindMultiples
         int start_4 = end_3 + 1; int end_4 = 4*range; //start_end.put(start_4, end_4);
         int start_5 = end_4 + 1; int end_5 = 5*range; //start_end.put(start_5, end_5);
         int start_6 = end_5 + 1; int end_6 = n; //start_end.put(start_6, end_6);
-        Task task_1 = new Task(divisors, results, n, start_1, end_1); taskList.add(task_1);
-        Task task_2 = new Task(divisors, results, n, start_2, end_2); taskList.add(task_2);
-        Task task_3 = new Task(divisors, results, n, start_3, end_3); taskList.add(task_3);
-        Task task_4 = new Task(divisors, results, n, start_4, end_4); taskList.add(task_4);
-        Task task_5 = new Task(divisors, results, n, start_5, end_5); taskList.add(task_5);
-        Task task_6 = new Task(divisors, results, n, start_6, end_6); taskList.add(task_6);
+        Task task_1 = new Task(divisors, results, n, start_1, end_1, lock); taskList.add(task_1);
+        Task task_2 = new Task(divisors, results, n, start_2, end_2, lock); taskList.add(task_2);
+        Task task_3 = new Task(divisors, results, n, start_3, end_3, lock); taskList.add(task_3);
+        Task task_4 = new Task(divisors, results, n, start_4, end_4, lock); taskList.add(task_4);
+        Task task_5 = new Task(divisors, results, n, start_5, end_5, lock); taskList.add(task_5);
+        Task task_6 = new Task(divisors, results, n, start_6, end_6, lock); taskList.add(task_6);
 
         for (Task task : taskList){
             Thread thread = new Thread(task);
@@ -94,13 +104,13 @@ public class FindMultiples
             }
         }
         int sum = 0;
-        for (int num : results){
-            sum += num;
+        for (int number : results){
+            sum += number;
         }
         return sum;
     }
     public static void main(String[] args) {
-        int n = 1;
+        int n = 76293;
         System.out.println(getSum(n));
     }
 }
