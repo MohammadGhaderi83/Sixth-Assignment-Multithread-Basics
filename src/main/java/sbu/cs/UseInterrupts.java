@@ -10,6 +10,9 @@ package sbu.cs;
     Take note that you are NOT ALLOWED to change or delete any existing line of code.
  */
 
+import java.time.Instant;
+import java.util.concurrent.TimeUnit;
+
 public class UseInterrupts
 {
 /*
@@ -30,20 +33,23 @@ public class UseInterrupts
         @Override
         public void run() {
             System.out.println(this.getName() + " is Active.");
-
             while (this.sleepCounter > 0)
             {
                 try {
+                    TimeUnit.SECONDS.sleep(3);
                     Thread.sleep(1000);
+                    if (currentThread().isAlive()){
+                        System.out.println(currentThread().getName() + " is interrupted because it was running for more than 3 seconds!");
+                        currentThread().interrupt();
+                        break;
+                    }
                 } catch (InterruptedException e) {
-
-                }
-                finally {
+//                    System.out.println(currentThread().getName() + " is Interrupted!");
+                } finally {
                     this.sleepCounter--;
                     System.out.println("Number of sleeps remaining: " + this.sleepCounter);
                 }
             }
-
         }
     }
 
@@ -64,30 +70,31 @@ public class UseInterrupts
 
         @Override
         public void run() {
-            System.out.println(this.getName() + " is Active.");
-
-            for (int i = 0; i < 10; i += 3)
-            {
-                i -= this.value;
-
+            try {
+                TimeUnit.SECONDS.sleep(3);
+                System.out.println(this.getName() + " is Active.");
+                for (int i = 0; i < 10; i += 3)
+                {
+                    System.out.println(i);
+                    i -= this.value;
+                    if (currentThread().isAlive()){
+                        System.out.println(currentThread().getName() + " is interrupted because it was running for more than 3 seconds!");
+                        currentThread().interrupt();
+                        break;
+                    }
+                }
+            } catch (InterruptedException e) {
+//                System.out.println(currentThread().getName() + " is interrupted");
             }
         }
     }
 
-/*
-    You can add new code to the main function. This is where you must utilize interrupts.
-    No existing line of code should be changed or deleted.
- */
     public static void main(String[] args) {
         SleepThread sleepThread = new SleepThread(5);
         sleepThread.start();
 
-        // TODO  Check if this thread runs for longer than 3 seconds (if it does, interrupt it)
-
         LoopThread loopThread = new LoopThread(3);
         loopThread.start();
-
-        // TODO  Check if this thread runs for longer than 3 seconds (if it does, interrupt it)
 
     }
 }
